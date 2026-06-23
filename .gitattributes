@@ -1,0 +1,5 @@
+# Tell GitHub Linguist to treat frontend files as vendor/library code
+# so they are excluded from the repository language statistics.
+*.js linguist-vendored
+*.css linguist-vendored
+*.html linguist-vendored
