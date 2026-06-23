@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prolog Detective: The Castle Mystery</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Global Debugging Catcher -->
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100%';
+            div.style.background = '#ea4a4a';
+            div.style.color = '#fff';
+            div.style.padding = '15px';
+            div.style.zIndex = '99999';
+            div.style.fontFamily = 'monospace';
+            div.style.fontSize = '14px';
+            div.style.borderBottom = '3px solid #b32d2d';
+            div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+            div.innerHTML = '<strong>JS Error:</strong> ' + message + ' at ' + source + ':' + lineno + ':' + colno;
+            document.body.appendChild(div);
+            return false;
+        };
+        window.onunhandledrejection = function(event) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100%';
+            div.style.background = '#ea4a4a';
+            div.style.color = '#fff';
+            div.style.padding = '15px';
+            div.style.zIndex = '99999';
+            div.style.fontFamily = 'monospace';
+            div.style.fontSize = '14px';
+            div.style.borderBottom = '3px solid #b32d2d';
+            div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+            div.innerHTML = '<strong>Unhandled Promise Rejection:</strong> ' + event.reason;
+            document.body.appendChild(div);
+        };
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-user-secret logo-icon"></i>
+                <div class="title-sub">
+                    <h1>PROLOG DETECTIVE</h1>
+                    <span class="subtitle">The Castle Mystery • Logic Engine: Tau Prolog</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="btn-restart" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> Restart Mystery</button>
+                <button id="btn-how-to" class="btn btn-secondary"><i class="fa-solid fa-question-circle"></i> How to Play</button>
+                <button id="btn-accuse-main" class="btn btn-danger"><i class="fa-solid fa-gavel"></i> Accuse Suspect</button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="app-main">
+            <!-- Left Panel: Castle Map & Navigation -->
+            <section class="panel map-panel">
+                <h2 class="panel-title"><i class="fa-solid fa-compass"></i> Castle Map</h2>
+                <div class="room-grid">
+                    <!-- Conservatory -->
+                    <div class="room-card" id="room-conservatory" onclick="selectRoom('conservatory')">
+                        <div class="room-overlay"></div>
+                        <div class="room-content">
+                            <i class="fa-solid fa-leaf room-icon"></i>
+                            <h3>Conservatory</h3>
+                            <div class="room-status" id="status-conservatory">Unexplored</div>
+                        </div>
+                    </div>
+                    <!-- Library -->
+                    <div class="room-card" id="room-library" onclick="selectRoom('library')">
+                        <div class="room-overlay"></div>
+                        <div class="room-content">
+                            <i class="fa-solid fa-book room-icon"></i>
+                            <h3>Library</h3>
+                            <div class="room-status" id="status-library">Unexplored</div>
+                        </div>
+                    </div>
+                    <!-- Billiard Room -->
+                    <div class="room-card" id="room-billiard" onclick="selectRoom('billiard')">
+                        <div class="room-overlay"></div>
+                        <div class="room-content">
+                            <i class="fa-solid fa-circle room-icon"></i>
+                            <h3>Billiard Room</h3>
+                            <div class="room-status" id="status-billiard">Unexplored</div>
+                        </div>
+                    </div>
+                    <!-- Kitchen -->
+                    <div class="room-card" id="room-kitchen" onclick="selectRoom('kitchen')">
+                        <div class="room-overlay"></div>
+                        <div class="room-content">
+                            <i class="fa-solid fa-utensils room-icon"></i>
+                            <h3>Kitchen</h3>
+                            <div class="room-status" id="status-kitchen">Unexplored</div>
+                        </div>
+                    </div>
+                    <!-- Grand Hall (Starting point) -->
+                    <div class="room-card active" id="room-hall" onclick="selectRoom('hall')">
+                        <div class="room-overlay"></div>
+                        <div class="room-content">
+                            <i class="fa-solid fa-hotel room-icon"></i>
+                            <h3>Grand Hall</h3>
+                            <div class="room-status" id="status-hall">Investigating</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mystery-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Victim:</span>
+                        <span class="meta-value">Dr. Black</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Time of Death:</span>
+                        <span class="meta-value">10:00 PM</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Current Location:</span>
+                        <span class="meta-value highlight" id="current-location-text">Grand Hall</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Investigation Actions -->
+            <section class="panel action-panel">
+                <h2 class="panel-title"><i class="fa-solid fa-magnifying-glass"></i> Room Investigation</h2>
+                <div class="action-content" id="action-default-state">
+                    <div class="location-banner">
+                        <h3 id="action-room-title">Grand Hall</h3>
+                        <p id="action-room-desc">The grand foyer of the castle. The fireplace is cold, and footprints lead in several directions.</p>
+                    </div>
+
+                    <div class="actions-grid">
+                        <button id="btn-search-room" class="action-btn">
+                            <i class="fa-solid fa-binoculars"></i>
+                            <span>Search Room for Clues</span>
+                            <small class="action-hint">Uncovers physical evidence (hair, shoe prints, etc.)</small>
+                        </button>
+                        
+                        <div class="suspect-interrogation-area">
+                            <h4>Suspects Present:</h4>
+                            <div id="room-suspects-list" class="suspects-button-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feedback-area" id="action-feedback">
+                        <p class="placeholder-text">Select an action above to start investigating this room.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Detective Notebook & Prolog Deductor -->
+            <section class="panel notebook-panel">
+                <div class="notebook-tabs">
+                    <button class="tab-btn active" onclick="switchTab('clues')"><i class="fa-solid fa-clipboard-list"></i> Clues</button>
+                    <button class="tab-btn" onclick="switchTab('statements')"><i class="fa-solid fa-comments"></i> Statements</button>
+                    <button class="tab-btn highlight-tab" onclick="switchTab('deductor')"><i class="fa-solid fa-brain"></i> Ask Deductor</button>
+                </div>
+
+                <div class="tab-content active" id="tab-clues">
+                    <div class="notebook-list-container">
+                        <h3><i class="fa-solid fa-dna"></i> Discovered Physical Evidence</h3>
+                        <p class="sub-instructions">These physical facts are automatically updated in the Prolog database as absolute truths.</p>
+                        <ul class="clue-list" id="discovered-clues-list">
+                            <li class="empty-list-msg">No physical clues found yet. Go search some rooms!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-statements">
+                    <div class="notebook-list-container">
+                        <h3><i class="fa-solid fa-quote-left"></i> Suspect Statements & Alibis</h3>
+                        <p class="sub-instructions">Alibis are asserted to Prolog as claims. The solver will cross-reference them for lies.</p>
+                        <ul class="statement-list" id="discovered-statements-list">
+                            <li class="empty-list-msg">No statements recorded yet. Talk to suspects in different rooms!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-deductor">
+                    <div class="deductor-container">
+                        <div class="deductor-actions">
+                            <button id="btn-run-deductions" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-microchip"></i> Run Prolog Reasoner
+                            </button>
+                        </div>
+                        
+                        <div class="deductions-results">
+                            <div class="deduction-group">
+                                <h4><i class="fa-solid fa-shield-halved"></i> Proven Innocent:</h4>
+                                <ul id="proven-innocent-list" class="deduction-list">
+                                    <li class="empty-list-msg">No suspects proven innocent yet. Run reasoner to recalculate.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="deduction-group">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> Contradictions Detected:</h4>
+                                <ul id="contradictions-list" class="deduction-list warning-list">
+                                    <li class="empty-list-msg">No contradictions found. All statements seem consistent.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="deduction-group">
+                                <h4><i class="fa-solid fa-skull-crossbones"></i> Current Suspect Status:</h4>
+                                <div id="suspects-status-grid" class="status-grid">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Prolog Terminal/Console -->
+                        <div class="prolog-console-container">
+                            <div class="console-header">
+                                <span><i class="fa-solid fa-terminal"></i> Prolog Query Console</span>
+                                <span class="console-status" id="console-status"><span class="dot green"></span> Ready</span>
+                            </div>
+                            <div class="console-body" id="prolog-console-output">
+                                <span class="system-line">%% Tau Prolog Engine initialized successfully.</span>
+                                <span class="system-line">%% Dynamic predicates compiled and ready.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Accuse Modal -->
+        <div id="modal-accuse" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('modal-accuse')">&times;</span>
+                <h2><i class="fa-solid fa-gavel text-danger"></i> Present Your Accusation</h2>
+                <p>Assemble your final case. If your logic matches the truth, you solve the mystery!</p>
+                
+                <form id="accuse-form" onsubmit="submitAccusation(event)">
+                    <div class="form-group">
+                        <label for="accuse-suspect">Who is the Killer?</label>
+                        <select id="accuse-suspect" required>
+                            <option value="" disabled selected>Select the culprit...</option>
+                            <option value="clara">Lady Clara</option>
+                            <option value="mustard">Colonel Mustard</option>
+                            <option value="plum">Professor Plum</option>
+                            <option value="scarlet">Miss Scarlet</option>
+                            <option value="green">Mr. Green</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accuse-room">Where was the Murder Committed?</label>
+                        <select id="accuse-room" required>
+                            <option value="" disabled selected>Select the crime scene...</option>
+                            <option value="conservatory">Conservatory</option>
+                            <option value="library">Library</option>
+                            <option value="billiard">Billiard Room</option>
+                            <option value="kitchen">Kitchen</option>
+                            <option value="hall">Grand Hall</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accuse-weapon">What was the Murder Weapon?</label>
+                        <select id="accuse-weapon" required>
+                            <option value="" disabled selected>Select the weapon...</option>
+                            <option value="revolver">Revolver</option>
+                            <option value="rope">Rope</option>
+                            <option value="knife">Knife</option>
+                            <option value="pipe">Lead Pipe</option>
+                            <option value="poison">Poison</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-accuse')">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Make Accusation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div id="modal-help" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('modal-help')">&times;</span>
+                <h2><i class="fa-solid fa-circle-question"></i> How to Play & Prolog logic</h2>
+                <div class="help-scroll">
+                    <h3>The Mystery</h3>
+                    <p>Dr. Black has been murdered! The crime took place at <strong>10:00 PM</strong> in one of the castle rooms. Your job is to find the <strong>Culprit</strong>, the <strong>Crime Scene Room</strong>, and the <strong>Murder Weapon</strong>.</p>
+                    
+                    <h3>Gathering Clues</h3>
+                    <ul>
+                        <li><strong>Search Rooms</strong>: Click on different rooms on the map, then click "Search Room". You will find physical trace evidence (shoe size prints, hair color fibers, fingerprint types). Physical clues are always 100% true!</li>
+                        <li><strong>Interview Suspects</strong>: Suspects move between rooms. Click on their avatar button in the room panel to interview them. They will tell you their alibi (where they claim to have been at 10 PM) or mention seeing someone else.</li>
+                    </ul>
+
+                    <h3>The Prolog Reasoning Engine</h3>
+                    <p>Every clue or statement you discover is asserted as a dynamic Prolog fact (e.g. <code>clue_found(footprint, library, 9)</code> or <code>alibi_claimed(mustard, kitchen, 10)</code>).</p>
+                    <p>When you click <strong>Run Prolog Reasoner</strong>, the system executes real Prolog queries over these facts:</p>
+                    <ul>
+                        <li><code>innocent(X, Reason)</code>: A suspect is innocent if physical evidence at the crime scene contradicts their details, OR if they have a verified alibi, OR if physical evidence places them in a different room at 10 PM.</li>
+                        <li><code>contradiction(Msg)</code>: Looks for statements that conflict with physical trace evidence (meaning that suspect is lying!) or statements that contradict each other.</li>
+                        <li><code>guilty(X, Reason)</code>: A suspect is guilty if they are caught lying, or if they are the only suspect who cannot be proven innocent!</li>
+                    </ul>
+                    
+                    <h3>Deduction Rules to Keep in Mind</h3>
+                    <blockquote>
+                        <p><strong>Rule of Thumb:</strong> Physical clues are absolute truths. Innocent characters always tell the truth about where they were. <strong>The killer always lies about their own alibi!</strong> If a suspect's alibi statement conflicts with physical evidence, they are caught lying and are the killer!</p>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="modal-gameover" class="modal">
+            <div class="modal-content gameover-content">
+                <i class="fa-solid id-card-icon" id="gameover-icon"></i>
+                <h2 id="gameover-title">Case Solved!</h2>
+                <p id="gameover-msg">Congratulations, detective. You accused the right person.</p>
+                <div class="gameover-details" id="gameover-details">
+                    <!-- Details of culprit, room, weapon -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="restartMystery(); closeModal('modal-gameover')">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tau Prolog Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tau-prolog@0.3.2/modules/core.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

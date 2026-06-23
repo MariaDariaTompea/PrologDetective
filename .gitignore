@@ -1,0 +1,19 @@
+# Windows / OS files
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local server logs / temp files
+*.log
